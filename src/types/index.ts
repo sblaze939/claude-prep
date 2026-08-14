@@ -1,4 +1,4 @@
-export type CertId = 'ccdvf' | 'ccarf' | 'ccarp';
+export type CertId = 'ccdvf' | 'ccarf' | 'ccarp' | 'ccaa';
 
 export interface Certification {
   id: CertId;
@@ -11,7 +11,7 @@ export interface Certification {
   domains: Domain[];
   description: string;
   audience: string;
-  level: 'foundations' | 'professional';
+  level: 'associate' | 'foundations' | 'professional';
 }
 
 export interface Domain {
@@ -26,7 +26,7 @@ export interface Question {
   domain: string;
   text: string;
   type: 'single' | 'multi';
-  selectCount?: number; // for multi, how many to select
+  selectCount?: number;
   options: Option[];
   correctIds: string[];
   explanation: string;
@@ -46,8 +46,8 @@ export interface ExamAttempt {
   mode: 'practice' | 'simulator';
   startedAt: number;
   completedAt: number;
-  duration: number; // seconds actually spent
-  answers: Record<string, string[]>; // questionId -> selected option ids
+  duration: number;
+  answers: Record<string, string[]>;
   score: number; // 0-1000
   domainScores: Record<string, { correct: number; total: number }>;
   questionIds: string[];
@@ -64,16 +64,16 @@ export interface Bookmark {
 export interface SpacedRepCard {
   questionId: string;
   certId: CertId;
-  interval: number; // days
+  interval: number;
   easeFactor: number;
-  nextReview: number; // timestamp
+  nextReview: number;
   repetitions: number;
   lastResult: 'correct' | 'incorrect' | null;
 }
 
 export interface StudyPlan {
   certId: CertId;
-  examDate: string; // ISO date
+  examDate: string;
   hoursPerDay: number;
   createdAt: number;
   days: StudyDay[];
@@ -86,6 +86,12 @@ export interface StudyDay {
   completed: boolean;
 }
 
+export interface ConfidenceEntry {
+  certId: CertId;
+  value: number; // 0-100
+  updatedAt: number;
+}
+
 export interface AppState {
   theme: 'dark' | 'light';
   attempts: ExamAttempt[];
@@ -94,6 +100,7 @@ export interface AppState {
   studyPlan: StudyPlan | null;
   streak: number;
   lastStudyDate: string | null;
+  confidence: Record<CertId, number>; // 0-100 per cert
   toggleTheme: () => void;
   addAttempt: (attempt: ExamAttempt) => void;
   addBookmark: (b: Bookmark) => void;
@@ -103,5 +110,6 @@ export interface AppState {
   setStudyPlan: (plan: StudyPlan | null) => void;
   markDayComplete: (date: string) => void;
   clearHistory: () => void;
+  clearCertHistory: (certId: CertId) => void;
   updateStreak: () => void;
 }

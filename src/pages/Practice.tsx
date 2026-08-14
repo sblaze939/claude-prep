@@ -99,7 +99,7 @@ export function Practice() {
 
   if (mode === 'menu') {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12">
+      <div className="page">
         <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--txt)', marginBottom: '0.5rem' }}>Practice</h1>
         <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>Targeted drill modes to reinforce weak areas and locked-in retention.</p>
 
@@ -173,7 +173,7 @@ export function Practice() {
   const correct = sel.length === q.correctIds.length && sel.every(id => q.correctIds.includes(id));
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="page" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', fontSize: '0.82rem', color: 'var(--muted)' }}>
           <span>Q {idx + 1}/{queue.length}</span>

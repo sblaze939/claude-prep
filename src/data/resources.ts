@@ -217,6 +217,79 @@ export const resourceSections: ResourceSection[] = [
     ],
   },
   {
+    heading: 'Anthropic Open Source',
+    items: [
+      {
+        title: 'Anthropic Cookbook',
+        url: 'https://github.com/anthropics/anthropic-cookbook',
+        description: 'Notebook recipes for common patterns — tool use, multimodal, RAG, embeddings. Great for CCDV-F hands-on prep.',
+        type: 'official',
+        certs: ['ccdvf', 'ccarf'],
+        free: true,
+      },
+      {
+        title: 'Claude Agent SDK (Python)',
+        url: 'https://github.com/anthropics/claude-agent-sdk-python',
+        description: 'Official Python SDK for building Claude agents. Reference implementation for agentic architecture patterns.',
+        type: 'official',
+        certs: ['ccarf', 'ccarp'],
+        free: true,
+      },
+      {
+        title: 'Agent SDK Overview (Docs)',
+        url: 'https://platform.claude.com/docs/en/agent-sdk/overview',
+        description: 'Architecture and API reference for the Claude Agent SDK.',
+        type: 'docs',
+        certs: ['ccarf', 'ccarp'],
+        free: true,
+      },
+      {
+        title: 'Anthropic Engineering Blog',
+        url: 'https://www.anthropic.com/engineering',
+        description: 'Deep-dive technical posts from Anthropic engineers — context engineering, agent design, reliability patterns.',
+        type: 'blog',
+        free: true,
+      },
+    ],
+  },
+  {
+    heading: 'Anthropic Academy — Direct Course Links',
+    items: [
+      {
+        title: 'Claude 101 (Skilljar)',
+        url: 'https://anthropic.skilljar.com/claude-101',
+        description: 'Foundation-level course on Claude capabilities, safety, and usage. Free.',
+        type: 'course',
+        certs: ['ccaa'],
+        free: true,
+      },
+      {
+        title: 'Building with Claude API (Skilljar)',
+        url: 'https://anthropic.skilljar.com/claude-with-the-anthropic-api',
+        description: 'Messages API, tool use, streaming — directly maps to CCDV-F domain 1.',
+        type: 'course',
+        certs: ['ccdvf'],
+        free: true,
+      },
+      {
+        title: 'Introduction to MCP (Skilljar)',
+        url: 'https://anthropic.skilljar.com/introduction-to-model-context-protocol',
+        description: 'MCP fundamentals — server setup, resources, prompts, tools.',
+        type: 'course',
+        certs: ['ccarf'],
+        free: true,
+      },
+      {
+        title: 'Claude Code in Action (Skilljar)',
+        url: 'https://anthropic.skilljar.com/claude-code-in-action',
+        description: 'Claude Code hooks, permissions, CI/CD integration — covers CCAR-F domain 2.',
+        type: 'course',
+        certs: ['ccarf'],
+        free: true,
+      },
+    ],
+  },
+  {
     heading: 'Third-Party Study Resources',
     items: [
       {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { CalendarDays, CheckCircle, Circle, Trash2 } from 'lucide-react';
 import { certifications } from '../data/certifications';
 import { useAppStore } from '../store/useAppStore';
+import { toast } from '../components/ui/Toast';
 import type { CertId, StudyDay, StudyPlan as SPlan } from '../types';
 
 function generatePlan(certId: CertId, examDate: string, hoursPerDay: number): SPlan {
@@ -71,7 +72,10 @@ export function StudyPlan() {
   const maxDate = new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0];
 
   const create = () => {
-    if (!examDate) return;
+    if (!examDate) {
+      toast('Please select an exam date first.', 'error');
+      return;
+    }
     setStudyPlan(generatePlan(certId, examDate, hoursPerDay));
   };
 
@@ -84,7 +88,7 @@ export function StudyPlan() {
     const daysLeft = Math.max(0, Math.floor((new Date(studyPlan.examDate).getTime() - Date.now()) / 86400000));
 
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12">
+      <div className="page">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--txt)', marginBottom: '0.25rem' }}>Study Plan — {cert.shortName}</h1>
@@ -154,7 +158,7 @@ export function StudyPlan() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12">
+    <div className="page">
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem' }}>
         <CalendarDays size={20} style={{ color: 'var(--accent-lt)' }} />
         <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--txt)' }}>Study Plan Generator</h1>
@@ -203,7 +207,7 @@ export function StudyPlan() {
           </div>
         </div>
 
-        <button className="btn-primary" onClick={create} disabled={!examDate} style={{ alignSelf: 'flex-start', fontSize: '0.9rem', padding: '0.6rem 1.5rem' }}>
+        <button className="btn-primary" onClick={create} style={{ alignSelf: 'flex-start', fontSize: '0.9rem', padding: '0.6rem 1.5rem' }}>
           Generate plan <CalendarDays size={14} />
         </button>
       </div>

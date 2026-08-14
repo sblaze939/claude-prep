@@ -89,7 +89,7 @@ export function Simulator() {
 
   if (phase === 'briefing') {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12">
+      <div className="page">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem' }}>
           <Zap size={20} style={{ color: 'var(--warn)' }} />
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--txt)' }}>Exam Simulator</h1>
@@ -134,7 +134,7 @@ export function Simulator() {
     const { score, domainScores } = scoreExam(questions, answers);
     const passed = isPassed(certId, score);
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12">
+      <div className="page">
         <div className="card" style={{ padding: '2rem', marginBottom: '1.5rem', textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', fontWeight: 800, color: passed ? 'var(--success)' : 'var(--danger)', letterSpacing: '-0.03em' }}>{score}</div>
           <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>/ 1000</div>
@@ -198,7 +198,7 @@ export function Simulator() {
   const answeredCount = Object.keys(answers).length;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="page" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
         <div style={{ display: 'flex', gap: '1rem', fontSize: '0.82rem', color: 'var(--muted)' }}>
           <span>Q {current + 1}/{questions.length}</span>

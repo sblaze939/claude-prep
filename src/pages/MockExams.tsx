@@ -6,9 +6,11 @@ import { getQuestions } from '../data/questions';
 import { scoreExam, isPassed } from '../utils/scoring';
 import { useTimer } from '../hooks/useTimer';
 import { useAppStore } from '../store/useAppStore';
+import { likelyhoodSummary } from '../components/ui/ConfidenceMeter';
 import type { Question, CertId } from '../types';
 
 type Phase = 'select' | 'exam' | 'results';
+type ReviewFilter = 'all' | 'correct' | 'incorrect' | 'skipped';
 
 function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
@@ -18,11 +20,13 @@ export function MockExams() {
   const [params] = useSearchParams();
   const [phase, setPhase] = useState<Phase>('select');
   const [certId, setCertId] = useState<CertId>((params.get('cert') as CertId) || 'ccdvf');
+  const [condensed, setCondensed] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [submitted, setSubmitted] = useState(false);
   const [startTime, setStartTime] = useState(0);
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('all');
   const { addAttempt, addBookmark, removeBookmark, bookmarks, updateStreak } = useAppStore();
 
   const cert = certifications.find(c => c.id === certId)!;
@@ -31,11 +35,13 @@ export function MockExams() {
   const { seconds, elapsed, start, reset } = useTimer(cert.duration * 60, handleExpire);
 
   const startExam = () => {
-    const qs = shuffle(getQuestions(certId)).slice(0, cert.questions);
+    const qCount = condensed ? Math.ceil(cert.questions / 2) : cert.questions;
+    const qs = shuffle(getQuestions(certId)).slice(0, qCount);
     setQuestions(qs);
     setAnswers({});
     setCurrent(0);
     setSubmitted(false);
+    setReviewFilter('all');
     setStartTime(Date.now());
     reset();
     start();
@@ -88,7 +94,7 @@ export function MockExams() {
 
   if (phase === 'select') {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12">
+      <div className="page">
         <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--txt)', marginBottom: '0.5rem' }}>Mock Exams</h1>
         <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>Timed practice with instant per-question feedback and domain breakdown.</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
@@ -106,17 +112,37 @@ export function MockExams() {
                 transition: 'all 0.15s',
               }}
             >
-              <div style={{ fontWeight: 600, color: 'var(--txt)', fontSize: '0.9rem' }}>{c.shortName}</div>
-              <div style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>{c.questions} questions · {c.duration} min · ${c.price}</div>
+              <div style={{ fontWeight: 600, color: 'var(--txt)', fontSize: '0.9rem' }}>
+                {c.name}{' '}
+                <span style={{ color: 'var(--muted)', fontWeight: 400, fontSize: '0.82rem' }}>({c.shortName})</span>
+              </div>
+              <div style={{ color: 'var(--muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>{c.questions} questions · {c.duration} min · ${c.price}</div>
             </button>
           ))}
         </div>
-        <div className="card" style={{ padding: '1rem 1.25rem', marginBottom: '1.5rem' }}>
+        <div className="card" style={{ padding: '1rem 1.25rem', marginBottom: '1rem' }}>
           <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
             <Info label="Questions" value={getQuestions(certId).length + ' in bank'} />
             <Info label="Duration" value={cert.duration + ' min'} />
             <Info label="Pass score" value={cert.passingScore + '/1000'} />
           </div>
+        </div>
+        {/* Mode toggle */}
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          {[{ val: false, label: 'Full exam', sub: `${cert.questions}q · ${cert.duration} min` }, { val: true, label: 'Condensed', sub: `${Math.ceil(cert.questions / 2)}q · ${cert.duration / 2} min` }].map(m => (
+            <button
+              key={String(m.val)}
+              onClick={() => setCondensed(m.val)}
+              style={{
+                padding: '0.6rem 1rem', borderRadius: '0.5rem', border: `1.5px solid ${condensed === m.val ? 'var(--accent)' : 'var(--border)'}`,
+                background: condensed === m.val ? 'color-mix(in srgb, var(--accent) 10%, var(--surface))' : 'transparent',
+                cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
+              }}
+            >
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: condensed === m.val ? 'var(--accent-lt)' : 'var(--txt)' }}>{m.label}</div>
+              <div style={{ fontSize: '0.73rem', color: 'var(--muted)' }}>{m.sub}</div>
+            </button>
+          ))}
         </div>
         <button className="btn-primary" style={{ fontSize: '0.9rem', padding: '0.65rem 1.75rem' }} onClick={startExam}>
           Start exam <ChevronRight size={16} />
@@ -128,13 +154,22 @@ export function MockExams() {
   if (phase === 'results') {
     const { score, domainScores } = scoreExam(questions, answers);
     const passed = isPassed(certId, score);
+    const likelihood = likelyhoodSummary(score, cert.passingScore);
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12">
+      <div className="page">
         <div className="card" style={{ padding: '2rem', marginBottom: '1.5rem', textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', fontWeight: 800, color: passed ? 'var(--success)' : 'var(--danger)', letterSpacing: '-0.03em' }}>{score}</div>
           <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>/ 1000</div>
           <div className={`badge ${passed ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '0.8rem' }}>
             {passed ? 'PASS' : 'NOT PASSED'} — {cert.passingScore} required
+          </div>
+        </div>
+        {/* Likelihood to pass summary */}
+        <div className="card" style={{ padding: '1.1rem 1.25rem', marginBottom: '1.5rem', borderColor: likelihood.color, display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: 10, height: 10, borderRadius: '50%', background: likelihood.color, flexShrink: 0 }} />
+          <div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: likelihood.color }}>{likelihood.label}</div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: '0.15rem' }}>{likelihood.detail}</div>
           </div>
         </div>
         <div className="card" style={{ padding: '1.25rem', marginBottom: '1.5rem' }}>
@@ -156,18 +191,37 @@ export function MockExams() {
           })}
         </div>
         <div className="card" style={{ padding: '1.25rem', marginBottom: '1.5rem' }}>
-          <h3 style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--txt)', marginBottom: '1rem' }}>Question Review</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+            <h3 style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--txt)' }}>Question Review</h3>
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
+              {(['all', 'correct', 'incorrect', 'skipped'] as ReviewFilter[]).map(f => (
+                <button key={f} onClick={() => setReviewFilter(f)} style={{
+                  padding: '0.25rem 0.6rem', borderRadius: '0.375rem', border: `1.5px solid ${reviewFilter === f ? 'var(--accent)' : 'var(--border)'}`,
+                  background: reviewFilter === f ? 'color-mix(in srgb, var(--accent) 10%, var(--surface))' : 'transparent',
+                  cursor: 'pointer', fontSize: '0.73rem', fontWeight: 500,
+                  color: reviewFilter === f ? 'var(--accent-lt)' : 'var(--muted)', transition: 'all 0.15s', textTransform: 'capitalize',
+                }}>
+                  {f}
+                </button>
+              ))}
+            </div>
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {questions.map((q, i) => {
               const sel = answers[q.id] ?? [];
               const correct = sel.length === q.correctIds.length && sel.every(id => q.correctIds.includes(id));
+              const skipped = sel.length === 0;
+              if (reviewFilter === 'correct' && !correct) return null;
+              if (reviewFilter === 'incorrect' && (correct || skipped)) return null;
+              if (reviewFilter === 'skipped' && !skipped) return null;
               return (
                 <div key={q.id} style={{ borderBottom: '1px solid var(--border)', paddingBottom: '1.25rem' }}>
                   <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', alignItems: 'flex-start' }}>
-                    {correct ? <CheckCircle size={15} style={{ color: 'var(--success)', flexShrink: 0, marginTop: 2 }} /> : <XCircle size={15} style={{ color: 'var(--danger)', flexShrink: 0, marginTop: 2 }} />}
+                    {skipped ? <XCircle size={15} style={{ color: 'var(--muted)', flexShrink: 0, marginTop: 2 }} /> : correct ? <CheckCircle size={15} style={{ color: 'var(--success)', flexShrink: 0, marginTop: 2 }} /> : <XCircle size={15} style={{ color: 'var(--danger)', flexShrink: 0, marginTop: 2 }} />}
                     <span style={{ fontSize: '0.85rem', color: 'var(--txt)', fontWeight: 500 }}>Q{i + 1}. {q.text}</span>
                   </div>
-                  {!correct && (
+                  {skipped && <div style={{ marginLeft: '1.5rem', fontSize: '0.78rem', color: 'var(--muted)', marginBottom: '0.5rem' }}>Not answered</div>}
+                  {!correct && !skipped && (
                     <div style={{ marginLeft: '1.5rem', marginBottom: '0.5rem' }}>
                       <div style={{ fontSize: '0.78rem', color: 'var(--success)', marginBottom: '0.2rem' }}>
                         ✓ Correct: {q.correctIds.map(id => q.options.find(o => o.id === id)?.text).join(', ')}
@@ -204,7 +258,7 @@ export function MockExams() {
   const isLow = seconds < 300;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="page" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>

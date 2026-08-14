@@ -1,17 +1,37 @@
+import { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { certifications } from '../data/certifications';
 import { averageScore, formatDuration } from '../utils/scoring';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts';
-import { LayoutDashboard, Flame, Trophy, Clock } from 'lucide-react';
+import { LayoutDashboard, Flame, Trophy, Clock, RotateCcw, Trash2 } from 'lucide-react';
+import { ConfidenceMeter } from '../components/ui/ConfidenceMeter';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+import { toast } from '../components/ui/Toast';
+import type { CertId } from '../types';
 
 export function Dashboard() {
-  const { attempts, streak, clearHistory } = useAppStore();
+  const { attempts, streak, clearHistory, clearCertHistory, confidence } = useAppStore();
+  const [confirmAll, setConfirmAll] = useState(false);
+  const [confirmCert, setConfirmCert] = useState<CertId | null>(null);
 
-  if (attempts.length === 0) {
+  const handleClearAll = () => {
+    clearHistory();
+    setConfirmAll(false);
+    toast('All progress reset successfully.', 'success');
+  };
+
+  const handleClearCert = (certId: CertId) => {
+    const cert = certifications.find(c => c.id === certId);
+    clearCertHistory(certId);
+    setConfirmCert(null);
+    toast(`${cert?.shortName} progress reset.`, 'success');
+  };
+
+  if (attempts.length === 0 && Object.values(confidence).every(v => v === 0)) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-12">
+      <div className="page">
         <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--txt)', marginBottom: '0.5rem' }}>Dashboard</h1>
-        <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>Your progress, score trends, and domain heatmaps appear here after your first attempt.</p>
+        <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>Your progress, confidence meters, and score trends appear here after your first attempt.</p>
         <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
           <LayoutDashboard size={36} style={{ color: 'var(--border)', margin: '0 auto 1rem' }} />
           <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>No attempts yet. Take a mock exam to start tracking your progress.</p>
@@ -20,15 +40,14 @@ export function Dashboard() {
     );
   }
 
-  const byDate = [...attempts]
-    .reverse()
-    .map((a, i) => ({ name: `#${i + 1}`, score: a.score, cert: a.certId.toUpperCase() }));
+  const byDate = [...attempts].reverse().map((a, i) => ({
+    name: `#${i + 1}`, score: a.score, cert: a.certId.toUpperCase(),
+  }));
 
   const byCert = certifications.map(c => {
     const certAttempts = attempts.filter(a => a.certId === c.id);
     return {
-      name: c.shortName,
-      avg: averageScore(certAttempts),
+      name: c.shortName, avg: averageScore(certAttempts),
       best: certAttempts.length ? Math.max(...certAttempts.map(a => a.score)) : 0,
       count: certAttempts.length,
     };
@@ -51,22 +70,24 @@ export function Dashboard() {
     .sort((a, b) => a.pct - b.pct);
 
   const tooltipStyle = {
-    background: 'var(--surface)',
-    border: '1px solid var(--border)',
-    borderRadius: '0.5rem',
-    color: 'var(--txt)',
-    fontSize: '0.78rem',
+    background: 'var(--surface)', border: '1px solid var(--border)',
+    borderRadius: '0.5rem', color: 'var(--txt)', fontSize: '0.78rem',
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="page">
+      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--txt)', marginBottom: '0.25rem' }}>Dashboard</h1>
-          <p style={{ color: 'var(--muted)', fontSize: '0.875rem' }}>Your progress across all certification tracks.</p>
+          <p style={{ color: 'var(--muted)', fontSize: '0.875rem' }}>Progress across all certification tracks.</p>
         </div>
-        <button onClick={clearHistory} className="btn-ghost" style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem', color: 'var(--danger)', borderColor: 'var(--danger)' }}>
-          Clear history
+        <button
+          onClick={() => setConfirmAll(true)}
+          className="btn-ghost"
+          style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem', color: 'var(--danger)', borderColor: 'var(--danger)' }}
+        >
+          <Trash2 size={13} /> Reset all progress
         </button>
       </div>
 
@@ -76,6 +97,41 @@ export function Dashboard() {
         <KPI icon={<Trophy size={16} style={{ color: 'var(--success)' }} />} label="Passed" value={`${passCount}/${attempts.length}`} />
         <KPI icon={<Flame size={16} style={{ color: 'var(--warn)' }} />} label="Study Streak" value={`${streak} day${streak !== 1 ? 's' : ''}`} />
         <KPI icon={<Clock size={16} />} label="Time Studied" value={formatDuration(totalTime)} />
+      </div>
+
+      {/* Confidence meters */}
+      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <div>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--txt)', marginBottom: '0.2rem' }}>Confidence Levels</h3>
+            <p style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>Updated automatically after each mock exam or simulator attempt.</p>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1.5rem' }}>
+          {certifications.map(cert => {
+            const val = confidence[cert.id] ?? 0;
+            const certAttempts = attempts.filter(a => a.certId === cert.id);
+            return (
+              <div key={cert.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+                <ConfidenceMeter value={val} label={cert.shortName} />
+                <div style={{ fontSize: '0.72rem', color: 'var(--muted)', textAlign: 'center' }}>
+                  {certAttempts.length} attempt{certAttempts.length !== 1 ? 's' : ''}
+                </div>
+                {certAttempts.length > 0 && (
+                  <button
+                    onClick={() => setConfirmCert(cert.id)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '0.72rem', display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.2rem 0.5rem', borderRadius: '0.3rem', transition: 'color 0.15s' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--danger)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
+                    title={`Reset ${cert.shortName} progress`}
+                  >
+                    <RotateCcw size={10} /> Reset
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Score trend */}
@@ -94,7 +150,7 @@ export function Dashboard() {
         </div>
       )}
 
-      {/* By cert */}
+      {/* Average by cert */}
       {byCert.length > 0 && (
         <div className="card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
           <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--txt)', marginBottom: '1rem' }}>Average Score by Track</h3>
@@ -134,38 +190,60 @@ export function Dashboard() {
         </div>
       )}
 
-      {/* Recent attempts table */}
-      <div className="card" style={{ padding: '1.25rem' }}>
-        <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--txt)', marginBottom: '1rem' }}>Recent Attempts</h3>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                {['Track', 'Mode', 'Score', 'Result', 'Date'].map(h => (
-                  <th key={h} style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: 'var(--muted)', fontWeight: 500 }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {attempts.slice(0, 15).map(a => (
-                <tr key={a.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                  <td style={{ padding: '0.5rem 0.75rem', color: 'var(--txt)' }}>{a.certId.toUpperCase()}</td>
-                  <td style={{ padding: '0.5rem 0.75rem', color: 'var(--muted)' }}>{a.mode}</td>
-                  <td style={{ padding: '0.5rem 0.75rem', fontWeight: 600, color: 'var(--txt)' }}>{a.score}</td>
-                  <td style={{ padding: '0.5rem 0.75rem' }}>
-                    <span className={`badge ${a.passed ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '0.65rem' }}>
-                      {a.passed ? 'PASS' : 'FAIL'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '0.5rem 0.75rem', color: 'var(--muted)' }}>
-                    {new Date(a.completedAt).toLocaleDateString()}
-                  </td>
+      {/* Recent attempts */}
+      {attempts.length > 0 && (
+        <div className="card" style={{ padding: '1.25rem' }}>
+          <h3 style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--txt)', marginBottom: '1rem' }}>Recent Attempts</h3>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  {['Track', 'Mode', 'Score', 'Result', 'Date'].map(h => (
+                    <th key={h} style={{ textAlign: 'left', padding: '0.5rem 0.75rem', color: 'var(--muted)', fontWeight: 500 }}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {attempts.slice(0, 15).map(a => (
+                  <tr key={a.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '0.5rem 0.75rem', color: 'var(--txt)' }}>{a.certId.toUpperCase()}</td>
+                    <td style={{ padding: '0.5rem 0.75rem', color: 'var(--muted)' }}>{a.mode}</td>
+                    <td style={{ padding: '0.5rem 0.75rem', fontWeight: 600, color: 'var(--txt)' }}>{a.score}</td>
+                    <td style={{ padding: '0.5rem 0.75rem' }}>
+                      <span className={`badge ${a.passed ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '0.65rem' }}>
+                        {a.passed ? 'PASS' : 'FAIL'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.5rem 0.75rem', color: 'var(--muted)' }}>
+                      {new Date(a.completedAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Confirm dialogs */}
+      <ConfirmDialog
+        open={confirmAll}
+        title="Reset all progress?"
+        message="This will permanently delete all attempt history, confidence levels, spaced repetition data, and your study plan. This cannot be undone."
+        confirmLabel="Yes, reset everything"
+        danger
+        onConfirm={handleClearAll}
+        onCancel={() => setConfirmAll(false)}
+      />
+      <ConfirmDialog
+        open={confirmCert !== null}
+        title={`Reset ${certifications.find(c => c.id === confirmCert)?.shortName} progress?`}
+        message={`This will delete all ${certifications.find(c => c.id === confirmCert)?.shortName} attempts and reset its confidence level to 0. Other certifications are unaffected.`}
+        confirmLabel="Reset this cert"
+        danger
+        onConfirm={() => confirmCert && handleClearCert(confirmCert)}
+        onCancel={() => setConfirmCert(null)}
+      />
     </div>
   );
 }
@@ -173,7 +251,7 @@ export function Dashboard() {
 function KPI({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {
   return (
     <div className="card" style={{ padding: '1rem 1.1rem' }}>
-      <div style={{ color: 'var(--accent-lt)', marginBottom: '0.4rem' }}>{icon}</div>
+      <div style={{ color: 'var(--accent)', marginBottom: '0.4rem' }}>{icon}</div>
       <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--txt)', letterSpacing: '-0.02em' }}>{value}</div>
       <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{label}</div>
     </div>

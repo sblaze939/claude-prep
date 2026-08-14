@@ -1,43 +1,30 @@
 @import "tailwindcss";
 
-@theme {
-  --color-bg: #0f172a;
-  --color-surface: #1e293b;
-  --color-surface2: #334155;
-  --color-border: #334155;
-  --color-txt: #f1f5f9;
-  --color-muted: #94a3b8;
-  --color-accent: #6366f1;
-  --color-accent-lt: #818cf8;
-  --color-success: #10b981;
-  --color-warn: #f59e0b;
-  --color-danger: #ef4444;
-}
-
+/* Claude brand palette — dark mode default */
 :root {
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --surface2: #334155;
-  --border: #334155;
-  --txt: #f1f5f9;
-  --muted: #94a3b8;
-  --accent: #6366f1;
-  --accent-lt: #818cf8;
-  --success: #10b981;
-  --warn: #f59e0b;
-  --danger: #ef4444;
+  --bg: #1a1310;
+  --surface: #241e1a;
+  --surface2: #342c27;
+  --border: #4a3f38;
+  --txt: #faf7f4;
+  --muted: #a8978e;
+  --accent: #d97757;
+  --accent-lt: #f0956e;
+  --success: #4ade80;
+  --warn: #fbbf24;
+  --danger: #f87171;
 }
 
 [data-theme="light"] {
-  --bg: #f8fafc;
+  --bg: #faf7f3;
   --surface: #ffffff;
-  --surface2: #f1f5f9;
-  --border: #e2e8f0;
-  --txt: #0f172a;
-  --muted: #64748b;
-  --accent: #4f46e5;
-  --accent-lt: #6366f1;
-  --success: #059669;
+  --surface2: #f5ede4;
+  --border: #e4d3c5;
+  --txt: #1a1310;
+  --muted: #7a6458;
+  --accent: #c4612e;
+  --accent-lt: #d97757;
+  --success: #16a34a;
   --warn: #d97706;
   --danger: #dc2626;
 }
@@ -70,6 +57,13 @@ body {
 
 /* Selection */
 ::selection { background: var(--accent); color: #fff; }
+
+/* Global layout helper */
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
 
 .card {
   background: var(--surface);

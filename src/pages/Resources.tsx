@@ -30,7 +30,7 @@ export function Resources() {
   })).filter(s => s.items.length > 0);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="page">
       <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--txt)', marginBottom: '0.5rem' }}>Resources</h1>
       <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>
         Official docs, Anthropic Academy courses, and third-party guides — curated for exam relevance.

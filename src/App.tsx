@@ -8,6 +8,9 @@ import { Practice } from './pages/Practice';
 import { Dashboard } from './pages/Dashboard';
 import { Resources } from './pages/Resources';
 import { StudyPlan } from './pages/StudyPlan';
+import { DiagnosticTest } from './pages/DiagnosticTest';
+import { Glossary } from './pages/Glossary';
+import { ToastContainer } from './components/ui/Toast';
 
 export default function App() {
   return (
@@ -19,13 +22,16 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/exams" element={<MockExams />} />
             <Route path="/simulator" element={<Simulator />} />
+            <Route path="/diagnostic" element={<DiagnosticTest />} />
             <Route path="/practice" element={<Practice />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/glossary" element={<Glossary />} />
             <Route path="/plan" element={<StudyPlan />} />
           </Routes>
         </main>
         <Footer />
+        <ToastContainer />
       </div>
     </BrowserRouter>
   );
