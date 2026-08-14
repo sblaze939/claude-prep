@@ -82,8 +82,8 @@ export function Home() {
           ))}
         </div>
         {/* Row 2: 4th cert centred */}
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <div style={{ width: '100%', maxWidth: 'calc((100% - 2rem) / 3)' }}>
+        <div className="cert-row2">
+          <div className="cert-row2-inner">
             {certifications[3] && <CertCard cert={certifications[3]} levelColor={levelColor} levelLabel={levelLabel} />}
           </div>
         </div>
@@ -135,10 +135,12 @@ export function Home() {
             <span style={{ color: '#fff', fontWeight: 800, fontSize: '1rem' }}>SJ</span>
           </div>
           <div style={{ flex: 1, minWidth: 220 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '0.4rem' }}>
-              <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--txt)' }}>Software Engineer</span>
-              <span style={{ fontSize: '0.72rem', color: 'var(--muted)', background: 'var(--surface2)', padding: '0.15rem 0.45rem', borderRadius: '0.25rem' }}>5 years exp.</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '0.15rem' }}>
+              <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--txt)' }}>Satvik Jain</span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>aka Sblaze</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--muted)', background: 'var(--surface2)', padding: '0.15rem 0.45rem', borderRadius: '0.25rem' }}>5 yrs exp.</span>
             </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--accent-lt)', marginBottom: '0.5rem' }}>Software Engineer</div>
             <p style={{ color: 'var(--muted)', fontSize: '0.83rem', lineHeight: 1.7, marginBottom: '0.85rem' }}>
               Specialising in agentic AI systems, frontend engineering, and professional-grade enterprise solutions. Built this hub while studying for Claude certifications — to fill the gap in quality, free prep resources.
             </p>

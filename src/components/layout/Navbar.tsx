@@ -92,7 +92,13 @@ export function Navbar() {
           #desktop-nav { display: none !important; }
           #hamburger-btn { display: flex !important; }
         }
+        @media (min-width: 769px) {
+          #mobile-banner { display: none !important; }
+        }
       `}</style>
+      <div id="mobile-banner" style={{ background: 'color-mix(in srgb, var(--accent) 12%, var(--surface))', borderTop: '1px solid var(--border)', padding: '0.45rem 1.25rem', textAlign: 'center', fontSize: '0.75rem', color: 'var(--muted)' }}>
+        💡 For the best experience, open this on a desktop or laptop.
+      </div>
     </nav>
   );
 }

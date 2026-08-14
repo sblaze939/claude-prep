@@ -65,6 +65,21 @@ body {
   padding: 3rem 2rem;
 }
 
+/* Cert cards — 4th card centred on desktop, full-width on mobile */
+.cert-row2 {
+  display: flex;
+  justify-content: center;
+}
+.cert-row2-inner {
+  width: 100%;
+  max-width: calc((100% - 2rem) / 3);
+}
+@media (max-width: 820px) {
+  .cert-row2-inner {
+    max-width: 100%;
+  }
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
