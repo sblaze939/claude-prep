@@ -1,0 +1,67 @@
+import type { Certification } from '../types';
+
+export const certifications: Certification[] = [
+  {
+    id: 'ccdvf',
+    name: 'Claude Certified Developer — Foundations',
+    shortName: 'CCDV-F',
+    price: 125,
+    questions: 53,
+    duration: 120,
+    passingScore: 720,
+    level: 'foundations',
+    description: 'For engineers who build and ship Claude-powered applications and agents via the Claude API.',
+    audience: 'Software engineers, ML engineers, and developers with hands-on Claude API experience.',
+    domains: [
+      { id: 'app-integration', name: 'Applications & Integration', weight: 33 },
+      { id: 'model-selection', name: 'Model Selection & Optimization', weight: 10 },
+      { id: 'prompt-context', name: 'Prompt & Context Engineering', weight: 12 },
+      { id: 'eval-testing', name: 'Eval, Testing & Debugging', weight: 12 },
+      { id: 'agents-workflows', name: 'Agents & Workflows', weight: 12 },
+      { id: 'tools-mcp', name: 'Tools & MCPs', weight: 10 },
+      { id: 'security-safety', name: 'Security & Safety', weight: 7 },
+      { id: 'claude-code', name: 'Claude Code', weight: 4 },
+    ],
+  },
+  {
+    id: 'ccarf',
+    name: 'Claude Certified Architect — Foundations',
+    shortName: 'CCAR-F',
+    price: 125,
+    questions: 60,
+    duration: 120,
+    passingScore: 720,
+    level: 'foundations',
+    description: 'For architects designing production-grade Claude systems. Heavy on agentic orchestration and Claude Code.',
+    audience: 'Solution architects and technical practitioners designing production Claude systems.',
+    domains: [
+      { id: 'agentic-arch', name: 'Agentic Architecture & Orchestration', weight: 27 },
+      { id: 'claude-code-cfg', name: 'Claude Code Configuration & Workflows', weight: 20 },
+      { id: 'prompt-structured', name: 'Prompt Engineering & Structured Output', weight: 18 },
+      { id: 'tool-design-mcp', name: 'Tool Design & MCP Integration', weight: 20 },
+      { id: 'context-reliability', name: 'Context Management & Reliability', weight: 15 },
+    ],
+  },
+  {
+    id: 'ccarp',
+    name: 'Claude Certified Architect — Professional',
+    shortName: 'CCAR-P',
+    price: 175,
+    questions: 63,
+    duration: 120,
+    passingScore: 720,
+    level: 'professional',
+    description: 'The capstone exam. No official practice test exists. Covers enterprise architecture, governance, and lifecycle.',
+    audience: 'Mid-to-senior solution architects and AI/ML leads with 3+ years architecture experience and ~6 months production Claude work.',
+    domains: [
+      { id: 'solution-design', name: 'Solution Design & Architecture', weight: 22 },
+      { id: 'models-prompting', name: 'Models, Prompting & Context Engineering', weight: 18 },
+      { id: 'eval-optimization', name: 'Evaluation, Testing & Optimization', weight: 15 },
+      { id: 'governance-safety', name: 'Governance, Safety & Risk Management', weight: 18 },
+      { id: 'stakeholder-lifecycle', name: 'Stakeholder Communication & Lifecycle', weight: 15 },
+      { id: 'dev-productivity', name: 'Developer Productivity & Enablement', weight: 12 },
+    ],
+  },
+];
+
+export const getCert = (id: string) => certifications.find(c => c.id === id);
