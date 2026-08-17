@@ -187,7 +187,7 @@ export function Resources() {
           flexDirection: 'column',
           gap: '0.75rem',
           position: 'sticky',
-          top: 0,
+          top: 56,
           zIndex: 20,
           boxShadow: '0 4px 16px color-mix(in srgb, var(--accent) 12%, transparent)',
         }}>
