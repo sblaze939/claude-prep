@@ -176,140 +176,70 @@ export function Resources() {
 
   return (
     <div className="page">
-      {/* Study plan mode banner */}
+      {/* Study plan mode — compact sticky nav bar */}
       {fromPlan && (
-        <div className="card" style={{
-          padding: '0.85rem 1.25rem',
-          marginBottom: '1.5rem',
-          borderColor: 'var(--accent)',
-          background: 'var(--surface)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.75rem',
+        <div style={{
           position: 'sticky',
           top: 56,
           zIndex: 20,
-          boxShadow: '0 4px 16px color-mix(in srgb, var(--accent) 12%, transparent)',
+          background: 'var(--surface)',
+          borderBottom: '1px solid var(--border)',
+          boxShadow: '0 2px 12px color-mix(in srgb, var(--accent) 10%, transparent)',
+          padding: '0.55rem 0',
+          marginBottom: '1.25rem',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {/* Nav row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
             <button
               onClick={() => navigate('/plan')}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', padding: 0 }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', padding: 0, flexShrink: 0 }}
             >
-              <ArrowLeft size={13} /> Back to Study Plan
+              <ArrowLeft size={13} /> Back
             </button>
-            <span style={{ color: 'var(--muted)', fontSize: '0.75rem' }}>·</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <BookOpen size={13} style={{ color: 'var(--accent-lt)' }} />
-              <span style={{ fontSize: '0.8rem', color: 'var(--txt)', fontWeight: 600 }}>
-                Studying: {planState?.resourceTitle ?? 'Resource'}
-              </span>
-            </div>
+            <span style={{ color: 'var(--border)', fontSize: '0.75rem' }}>|</span>
+            <BookOpen size={12} style={{ color: 'var(--accent-lt)', flexShrink: 0 }} />
+            <span style={{ fontSize: '0.8rem', color: 'var(--txt)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60vw' }}>
+              {planState?.resourceTitle ?? 'Resource'}
+            </span>
+            {planState?.readingFocus && (
+              <span style={{ fontSize: '0.72rem', color: 'var(--accent-lt)', flexShrink: 0 }}>· 📍 see focus below ↓</span>
+            )}
           </div>
 
-          {/* Reading focus hint */}
-          {planState?.readingFocus && (
-            <div style={{
-              fontSize: '0.78rem',
-              color: 'var(--txt)',
-              background: 'color-mix(in srgb, var(--accent) 8%, var(--surface2))',
-              borderLeft: '3px solid var(--accent)',
-              borderRadius: '0 0.375rem 0.375rem 0',
-              padding: '0.5rem 0.75rem',
-              lineHeight: 1.5,
-            }}>
-              <span style={{ fontWeight: 700, color: 'var(--accent-lt)' }}>📍 What to focus on: </span>
-              {planState.readingFocus}
-            </div>
-          )}
-
-          {/* No-match fallback: standalone open link + Done Reading */}
-          {!quizActive && !foundMatch && matchingUrl && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          {/* No-match fallback */}
+          {!foundMatch && matchingUrl && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
               <a href={matchingUrl} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: '0.82rem', color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                <ExternalLink size={12} /> Open resource in new tab
+                style={{ fontSize: '0.8rem', color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <ExternalLink size={12} /> Open resource
               </a>
-              <button
-                onClick={() => setQuizActive(true)}
-                className="btn-primary"
-                style={{ fontSize: '0.78rem', padding: '0.3rem 0.9rem' }}
-              >
+              <button onClick={() => setQuizActive(true)} className="btn-primary" style={{ fontSize: '0.75rem', padding: '0.25rem 0.75rem' }}>
                 Done Reading?
               </button>
-            </div>
-          )}
-
-          {/* Quiz questions */}
-          {quizActive && !submitted && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <p style={{ fontSize: '0.78rem', color: 'var(--muted)', margin: 0 }}>Answer these 3 quick questions to reinforce what you read:</p>
-              {quizQuestions.map((q, qi) => (
-                <div key={qi} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                  <p style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--txt)', margin: 0 }}>{qi + 1}. {q.q}</p>
-                  {q.options.map((opt, oi) => (
-                    <button
-                      key={oi}
-                      onClick={() => setSelectedAnswers(prev => ({ ...prev, [qi]: oi }))}
-                      style={{
-                        textAlign: 'left', padding: '0.4rem 0.75rem', borderRadius: '0.375rem',
-                        border: `1.5px solid ${selectedAnswers[qi] === oi ? 'var(--accent)' : 'var(--border)'}`,
-                        background: selectedAnswers[qi] === oi ? 'color-mix(in srgb, var(--accent) 10%, var(--surface))' : 'transparent',
-                        cursor: 'pointer', fontSize: '0.8rem', color: 'var(--txt)', transition: 'all 0.12s',
-                      }}
-                    >
-                      {opt}
-                    </button>
+              {/* Inline quiz for no-match case */}
+              {quizActive && !submitted && (
+                <div style={{ width: '100%', marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {quizQuestions.map((q, qi) => (
+                    <div key={qi}>
+                      <p style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--txt)', margin: '0 0 0.35rem' }}>{qi + 1}. {q.q}</p>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                        {q.options.map((opt, oi) => (
+                          <button key={oi} onClick={() => setSelectedAnswers(prev => ({ ...prev, [qi]: oi }))}
+                            style={{ textAlign: 'left', padding: '0.35rem 0.65rem', borderRadius: '0.375rem', border: `1.5px solid ${selectedAnswers[qi] === oi ? 'var(--accent)' : 'var(--border)'}`, background: selectedAnswers[qi] === oi ? 'color-mix(in srgb, var(--accent) 10%, var(--surface))' : 'transparent', cursor: 'pointer', fontSize: '0.78rem', color: 'var(--txt)' }}>
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
+                  <button className="btn-primary" disabled={!allAnswered} onClick={() => setSubmitted(true)} style={{ alignSelf: 'flex-start', fontSize: '0.8rem', opacity: allAnswered ? 1 : 0.5 }}>Submit</button>
                 </div>
-              ))}
-              <button
-                className="btn-primary"
-                disabled={!allAnswered}
-                onClick={() => setSubmitted(true)}
-                style={{ alignSelf: 'flex-start', fontSize: '0.82rem', padding: '0.4rem 1.1rem', opacity: allAnswered ? 1 : 0.5 }}
-              >
-                Submit answers
-              </button>
-            </div>
-          )}
-
-          {/* Results */}
-          {submitted && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {score === quizQuestions.length
-                  ? <CheckCircle size={16} style={{ color: 'var(--success)' }} />
-                  : <XCircle size={16} style={{ color: 'var(--warn)' }} />}
-                <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--txt)' }}>
-                  {score}/{quizQuestions.length} correct
-                </span>
-                <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
-                  {score === quizQuestions.length ? '— Perfect! Great recall.' : score >= 2 ? '— Good. Review the missed ones.' : '— Worth re-reading the resource.'}
-                </span>
-              </div>
-              {quizQuestions.map((q, qi) => {
-                const correct = selectedAnswers[qi] === q.correct;
-                return (
-                  <div key={qi} style={{ fontSize: '0.78rem', display: 'flex', gap: '0.4rem', alignItems: 'flex-start' }}>
-                    {correct
-                      ? <CheckCircle size={13} style={{ color: 'var(--success)', marginTop: 1, flexShrink: 0 }} />
-                      : <XCircle size={13} style={{ color: 'var(--danger)', marginTop: 1, flexShrink: 0 }} />}
-                    <span style={{ color: correct ? 'var(--muted)' : 'var(--txt)' }}>
-                      {correct
-                        ? q.q
-                        : <><strong>Q{qi + 1}:</strong> {q.q} — Correct: <strong>{q.options[q.correct]}</strong></>}
-                    </span>
-                  </div>
-                );
-              })}
-              <button
-                className="btn-primary"
-                onClick={handleMarkComplete}
-                style={{ alignSelf: 'flex-start', fontSize: '0.82rem', padding: '0.4rem 1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-              >
-                <CheckCircle size={13} /> Mark task complete &amp; go back
-              </button>
+              )}
+              {submitted && (
+                <button className="btn-primary" onClick={handleMarkComplete} style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <CheckCircle size={12} /> {score}/{quizQuestions.length} — Mark complete &amp; go back
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -384,37 +314,87 @@ export function Resources() {
                         <ExternalLink size={14} style={{ color: 'var(--muted)', flexShrink: 0, marginTop: 2 }} />
                       </div>
                     </a>
-                    {/* Done Reading button on the highlighted card */}
-                    {isHighlighted && !quizActive && !submitted && (
-                      <button
-                        onClick={e => { e.stopPropagation(); setQuizActive(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        style={{
-                          position: 'absolute', top: '0.6rem', right: '2.5rem',
-                          fontSize: '0.72rem', padding: '0.2rem 0.65rem',
-                          background: 'var(--accent)', color: '#fff', border: 'none',
-                          borderRadius: 4, cursor: 'pointer', fontWeight: 600,
-                        }}
-                      >
-                        Done Reading?
-                      </button>
-                    )}
-                    {isHighlighted && quizActive && !submitted && (
+                    {/* Inline quiz panel — appears directly below the highlighted card */}
+                    {isHighlighted && (
                       <div style={{
-                        position: 'absolute', top: '0.6rem', right: '2.5rem',
-                        fontSize: '0.72rem', padding: '0.2rem 0.65rem',
-                        background: 'var(--success)', color: '#fff', borderRadius: 4, fontWeight: 600,
+                        marginTop: '0.25rem',
+                        border: '1.5px solid var(--accent)',
+                        borderTop: 'none',
+                        borderRadius: '0 0 0.6rem 0.6rem',
+                        background: 'color-mix(in srgb, var(--accent) 4%, var(--surface))',
+                        padding: '1rem 1.25rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.75rem',
                       }}>
-                        Quiz in progress ↑
-                      </div>
-                    )}
-                    {isHighlighted && submitted && (
-                      <div style={{
-                        position: 'absolute', top: '0.6rem', right: '2.5rem',
-                        fontSize: '0.72rem', padding: '0.2rem 0.65rem',
-                        background: score === quizQuestions.length ? 'var(--success)' : 'var(--warn)',
-                        color: '#fff', borderRadius: 4, fontWeight: 600,
-                      }}>
-                        {score}/{quizQuestions.length} ✓
+                        {/* Focus hint */}
+                        {planState?.readingFocus && (
+                          <div style={{ fontSize: '0.78rem', color: 'var(--txt)', borderLeft: '3px solid var(--accent)', padding: '0.4rem 0.7rem', background: 'color-mix(in srgb, var(--accent) 8%, var(--surface2))', borderRadius: '0 0.3rem 0.3rem 0', lineHeight: 1.5 }}>
+                            <span style={{ fontWeight: 700, color: 'var(--accent-lt)' }}>📍 Focus on: </span>{planState.readingFocus}
+                          </div>
+                        )}
+
+                        {/* Done Reading button */}
+                        {!quizActive && !submitted && (
+                          <button
+                            onClick={e => { e.stopPropagation(); setQuizActive(true); }}
+                            style={{ alignSelf: 'flex-start', fontSize: '0.82rem', padding: '0.4rem 1rem', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '0.4rem', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                          >
+                            <CheckCircle size={13} /> Done Reading? Take quick quiz
+                          </button>
+                        )}
+
+                        {/* Quiz questions */}
+                        {quizActive && !submitted && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <p style={{ fontSize: '0.78rem', color: 'var(--muted)', margin: 0 }}>3 quick questions to lock in what you read:</p>
+                            {quizQuestions.map((q, qi) => (
+                              <div key={qi}>
+                                <p style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--txt)', margin: '0 0 0.4rem' }}>{qi + 1}. {q.q}</p>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                                  {q.options.map((opt, oi) => (
+                                    <button key={oi} onClick={() => setSelectedAnswers(prev => ({ ...prev, [qi]: oi }))}
+                                      style={{ textAlign: 'left', padding: '0.4rem 0.75rem', borderRadius: '0.375rem', border: `1.5px solid ${selectedAnswers[qi] === oi ? 'var(--accent)' : 'var(--border)'}`, background: selectedAnswers[qi] === oi ? 'color-mix(in srgb, var(--accent) 10%, var(--surface))' : 'transparent', cursor: 'pointer', fontSize: '0.8rem', color: 'var(--txt)', transition: 'all 0.12s' }}>
+                                      {opt}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                            <button className="btn-primary" disabled={!allAnswered} onClick={() => setSubmitted(true)}
+                              style={{ alignSelf: 'flex-start', fontSize: '0.82rem', padding: '0.4rem 1.1rem', opacity: allAnswered ? 1 : 0.5 }}>
+                              Submit answers
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Results */}
+                        {submitted && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                              {score === quizQuestions.length ? <CheckCircle size={15} style={{ color: 'var(--success)' }} /> : <XCircle size={15} style={{ color: 'var(--warn)' }} />}
+                              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--txt)' }}>{score}/{quizQuestions.length} correct</span>
+                              <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
+                                {score === quizQuestions.length ? '— Perfect!' : score >= 2 ? '— Good, review the missed ones.' : '— Worth re-reading.'}
+                              </span>
+                            </div>
+                            {quizQuestions.map((q, qi) => {
+                              const isCorrect = selectedAnswers[qi] === q.correct;
+                              return (
+                                <div key={qi} style={{ fontSize: '0.77rem', display: 'flex', gap: '0.4rem', alignItems: 'flex-start' }}>
+                                  {isCorrect ? <CheckCircle size={12} style={{ color: 'var(--success)', marginTop: 1, flexShrink: 0 }} /> : <XCircle size={12} style={{ color: 'var(--danger)', marginTop: 1, flexShrink: 0 }} />}
+                                  <span style={{ color: isCorrect ? 'var(--muted)' : 'var(--txt)' }}>
+                                    {isCorrect ? q.q : <><strong>Q{qi + 1}:</strong> {q.q} — Correct: <strong>{q.options[q.correct]}</strong></>}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                            <button className="btn-primary" onClick={handleMarkComplete}
+                              style={{ alignSelf: 'flex-start', fontSize: '0.82rem', padding: '0.4rem 1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.25rem' }}>
+                              <CheckCircle size={13} /> Mark task complete &amp; go back
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
