@@ -13,6 +13,10 @@ function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
+function shuffleOptions(q: Question): Question {
+  return { ...q, options: [...q.options].sort(() => Math.random() - 0.5) };
+}
+
 function useConfetti(trigger: boolean) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -105,7 +109,7 @@ export function Simulator() {
   const { seconds, elapsed, start, reset } = useTimer(cert.duration * 60, handleExpire);
 
   const startExam = () => {
-    const qs = shuffle(getQuestions(certId)).slice(0, cert.questions);
+    const qs = shuffle(getQuestions(certId)).slice(0, cert.questions).map(shuffleOptions);
     setQuestions(qs);
     setAnswers({});
     setCurrent(0);
@@ -349,7 +353,7 @@ export function Simulator() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          {q.options.map(opt => {
+          {q.options.map((opt, oi) => {
             const chosen = sel.includes(opt.id);
             return (
               <button
@@ -362,7 +366,7 @@ export function Simulator() {
                   cursor: 'pointer', textAlign: 'left', fontSize: '0.875rem', color: 'var(--txt)', transition: 'all 0.15s',
                 }}
               >
-                <span style={{ fontWeight: 600, color: 'var(--muted)', marginRight: '0.5rem' }}>{opt.id.toUpperCase()}.</span>
+                <span style={{ fontWeight: 600, color: 'var(--muted)', marginRight: '0.5rem' }}>{String.fromCharCode(65 + oi)}.</span>
                 {opt.text}
               </button>
             );

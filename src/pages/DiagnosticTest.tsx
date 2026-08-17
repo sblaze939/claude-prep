@@ -9,6 +9,10 @@ function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
+function shuffleOptions(q: Question): Question {
+  return { ...q, options: [...q.options].sort(() => Math.random() - 0.5) };
+}
+
 function buildDiagnosticQuestions(certId: CertId): Question[] {
   const cert = certifications.find(c => c.id === certId)!;
   const all = getQuestions(certId);
@@ -18,7 +22,7 @@ function buildDiagnosticQuestions(certId: CertId): Question[] {
     const picked = shuffle(domainQs).slice(0, 2);
     result.push(...picked);
   }
-  return shuffle(result);
+  return shuffle(result).map(shuffleOptions);
 }
 
 type Phase = 'select' | 'quiz' | 'results';
@@ -238,7 +242,7 @@ export function DiagnosticTest() {
           {q.text}
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          {q.options.map(opt => {
+          {q.options.map((opt, oi) => {
             const chosen = sel.includes(opt.id);
             const isCorrect = q.correctIds.includes(opt.id);
             let borderColor = chosen ? 'var(--accent)' : 'var(--border)';
@@ -254,7 +258,7 @@ export function DiagnosticTest() {
                 disabled={submitted}
                 style={{ padding: '0.7rem 1rem', borderRadius: '0.5rem', border: `1.5px solid ${borderColor}`, background: bg, cursor: submitted ? 'default' : 'pointer', textAlign: 'left', fontSize: '0.875rem', color: 'var(--txt)', transition: 'all 0.15s' }}
               >
-                <span style={{ fontWeight: 600, color: 'var(--muted)', marginRight: '0.5rem' }}>{opt.id.toUpperCase()}.</span>
+                <span style={{ fontWeight: 600, color: 'var(--muted)', marginRight: '0.5rem' }}>{String.fromCharCode(65 + oi)}.</span>
                 {opt.text}
               </button>
             );

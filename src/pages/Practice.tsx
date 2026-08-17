@@ -9,13 +9,17 @@ import type { CertId, Question } from '../types';
 
 type Mode = 'menu' | 'sr' | 'domain' | 'bookmarks' | 'question' | 'cram';
 
+function shuffleOptions(q: Question): Question {
+  return { ...q, options: [...q.options].sort(() => Math.random() - 0.5) };
+}
+
 function buildCramQuestions(certId: CertId): Question[] {
   const cert = certifications.find(c => c.id === certId)!;
   const allQs = getQuestions(certId);
   const topDomains = [...cert.domains].sort((a, b) => b.weight - a.weight).slice(0, 2).map(d => d.id);
   const topQs = allQs.filter(q => topDomains.includes(q.domain)).sort(() => Math.random() - 0.5);
   const rest = allQs.filter(q => !topDomains.includes(q.domain)).sort(() => Math.random() - 0.5);
-  return [...topQs, ...rest].slice(0, 20);
+  return [...topQs, ...rest].slice(0, 20).map(shuffleOptions);
 }
 
 export function Practice() {
@@ -52,7 +56,7 @@ export function Practice() {
       const cid = cramState.certId as CertId;
       const did = cramState.domain;
       const count = cramState.count ?? 10;
-      const qs = getQuestions(cid).filter(q => q.domain === did).sort(() => Math.random() - 0.5).slice(0, count);
+      const qs = getQuestions(cid).filter(q => q.domain === did).sort(() => Math.random() - 0.5).slice(0, count).map(shuffleOptions);
       if (qs.length) {
         setCertId(cid);
         setDomainId(did);
@@ -73,7 +77,7 @@ export function Practice() {
     const newQs = allQs.filter(q => !srCards.find(c => c.questionId === q.id)).slice(0, Math.max(5, 10 - dueQs.length));
     const combined = [...dueQs, ...newQs];
     if (!combined.length) return;
-    setQueue(combined.sort(() => Math.random() - 0.5));
+    setQueue(combined.sort(() => Math.random() - 0.5).map(shuffleOptions));
     setIdx(0);
     setSel([]);
     setAnswered(false);
@@ -81,7 +85,7 @@ export function Practice() {
   }
 
   function startDomain() {
-    const qs = getQuestions(certId).filter(q => q.domain === domainId).sort(() => Math.random() - 0.5);
+    const qs = getQuestions(certId).filter(q => q.domain === domainId).sort(() => Math.random() - 0.5).map(shuffleOptions);
     if (!qs.length) return;
     setQueue(qs);
     setIdx(0);
@@ -92,7 +96,7 @@ export function Practice() {
 
   function startBookmarks() {
     const certBookmarks = bookmarks.filter(b => b.certId === certId);
-    const qs = certBookmarks.map(b => getQuestion(b.questionId)).filter(Boolean) as Question[];
+    const qs = (certBookmarks.map(b => getQuestion(b.questionId)).filter(Boolean) as Question[]).map(shuffleOptions);
     if (!qs.length) return;
     setQueue(qs);
     setIdx(0);
@@ -270,7 +274,7 @@ export function Practice() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          {q.options.map(opt => {
+          {q.options.map((opt, oi) => {
             const chosen = sel.includes(opt.id);
             const isCorrectOpt = q.correctIds.includes(opt.id);
             let border = chosen ? 'var(--accent)' : 'var(--border)';
@@ -283,7 +287,7 @@ export function Practice() {
               <button key={opt.id} onClick={() => toggleSel(opt.id)} disabled={answered}
                 style={{ padding: '0.75rem 1rem', borderRadius: '0.5rem', border: `1.5px solid ${border}`, background: bg, cursor: answered ? 'default' : 'pointer', textAlign: 'left', fontSize: '0.875rem', color: 'var(--txt)', transition: 'all 0.15s' }}
               >
-                <span style={{ fontWeight: 600, color: 'var(--muted)', marginRight: '0.5rem' }}>{opt.id.toUpperCase()}.</span>
+                <span style={{ fontWeight: 600, color: 'var(--muted)', marginRight: '0.5rem' }}>{String.fromCharCode(65 + oi)}.</span>
                 {opt.text}
               </button>
             );
