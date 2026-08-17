@@ -1,14 +1,27 @@
-import { useState } from 'react';
-import { RefreshCw, ChevronRight, ChevronLeft, CheckCircle, XCircle, Bookmark, BookmarkCheck, Brain } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { RefreshCw, ChevronRight, ChevronLeft, CheckCircle, XCircle, Bookmark, BookmarkCheck, Brain, Zap } from 'lucide-react';
 import { certifications } from '../data/certifications';
 import { getQuestions, getQuestion } from '../data/questions';
 import { useAppStore } from '../store/useAppStore';
 import { updateCard, isDue, createCard } from '../utils/spacedRepetition';
 import type { CertId, Question } from '../types';
 
-type Mode = 'menu' | 'sr' | 'domain' | 'bookmarks' | 'question';
+type Mode = 'menu' | 'sr' | 'domain' | 'bookmarks' | 'question' | 'cram';
+
+function buildCramQuestions(certId: CertId): Question[] {
+  const cert = certifications.find(c => c.id === certId)!;
+  const allQs = getQuestions(certId);
+  const topDomains = [...cert.domains].sort((a, b) => b.weight - a.weight).slice(0, 2).map(d => d.id);
+  const topQs = allQs.filter(q => topDomains.includes(q.domain)).sort(() => Math.random() - 0.5);
+  const rest = allQs.filter(q => !topDomains.includes(q.domain)).sort(() => Math.random() - 0.5);
+  return [...topQs, ...rest].slice(0, 20);
+}
 
 export function Practice() {
+  const location = useLocation();
+  const cramState = location.state as { cramMode?: boolean; certId?: string } | null;
+
   const [mode, setMode] = useState<Mode>('menu');
   const [certId, setCertId] = useState<CertId>('ccdvf');
   const [domainId, setDomainId] = useState('');
@@ -20,6 +33,25 @@ export function Practice() {
 
   const cert = certifications.find(c => c.id === certId)!;
 
+  function startCramMode(cid: CertId) {
+    const qs = buildCramQuestions(cid);
+    if (!qs.length) return;
+    setCertId(cid);
+    setQueue(qs);
+    setIdx(0);
+    setSel([]);
+    setAnswered(false);
+    setMode('cram');
+  }
+
+  // Auto-start cram mode from router state (e.g. from Dashboard)
+  useEffect(() => {
+    if (cramState?.cramMode && cramState.certId) {
+      startCramMode(cramState.certId as CertId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function startSR() {
     const dueCards = srCards.filter(c => c.certId === certId && isDue(c));
     const allQs = getQuestions(certId);
@@ -29,7 +61,6 @@ export function Practice() {
     if (!combined.length) return;
     setQueue(combined.sort(() => Math.random() - 0.5));
     setIdx(0);
-
     setSel([]);
     setAnswered(false);
     setMode('sr');
@@ -40,7 +71,6 @@ export function Practice() {
     if (!qs.length) return;
     setQueue(qs);
     setIdx(0);
-
     setSel([]);
     setAnswered(false);
     setMode('domain');
@@ -52,7 +82,6 @@ export function Practice() {
     if (!qs.length) return;
     setQueue(qs);
     setIdx(0);
-
     setSel([]);
     setAnswered(false);
     setMode('bookmarks');
@@ -72,7 +101,6 @@ export function Practice() {
   function next() {
     if (idx < queue.length - 1) {
       setIdx(i => i + 1);
-  
       setSel([]);
       setAnswered(false);
     } else {
@@ -112,6 +140,30 @@ export function Practice() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
+          {/* Cram Mode */}
+          <div className="card" style={{ padding: '1.25rem', borderColor: 'var(--warn)', background: 'color-mix(in srgb, var(--warn) 4%, var(--surface))' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                  <Zap size={15} style={{ color: 'var(--warn)' }} />
+                  <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--txt)' }}>🔥 Cram Mode</span>
+                </div>
+                <p style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>20 questions · highest-weight domains · rapid fire</p>
+              </div>
+              <button
+                onClick={() => startCramMode(certId)}
+                style={{
+                  padding: '0.4rem 1rem', borderRadius: '0.5rem',
+                  background: 'var(--warn)', border: 'none',
+                  color: '#fff', cursor: 'pointer', fontWeight: 700, fontSize: '0.82rem',
+                  display: 'flex', alignItems: 'center', gap: '0.35rem',
+                }}
+              >
+                Start <ChevronRight size={13} />
+              </button>
+            </div>
+          </div>
+
           {/* Spaced Repetition */}
           <div className="card" style={{ padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -172,25 +224,28 @@ export function Practice() {
   const isBookmarked = bookmarks.some(b => b.questionId === q.id);
   const correct = sel.length === q.correctIds.length && sel.every(id => q.correctIds.includes(id));
 
+  const modeLabel = mode === 'sr' ? 'Spaced Rep' : mode === 'domain' ? 'Domain Drill' : mode === 'cram' ? '🔥 Cram' : 'Bookmarks';
+
   return (
     <div className="page" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', fontSize: '0.82rem', color: 'var(--muted)' }}>
           <span>Q {idx + 1}/{queue.length}</span>
-          <span className="badge badge-muted" style={{ fontSize: '0.7rem' }}>{mode === 'sr' ? 'Spaced Rep' : mode === 'domain' ? 'Domain Drill' : 'Bookmarks'}</span>
-          <span className={`badge badge-muted`} style={{ fontSize: '0.7rem' }}>{q.difficulty}</span>
+          <span className={`badge ${mode === 'cram' ? 'badge-warn' : 'badge-muted'}`} style={{ fontSize: '0.7rem' }}>{modeLabel}</span>
+          <span className="badge badge-muted" style={{ fontSize: '0.7rem' }}>{q.difficulty}</span>
         </div>
         <button onClick={() => setMode('menu')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '0.8rem' }}>← Back</button>
       </div>
 
       <div style={{ height: 3, background: 'var(--surface2)', borderRadius: 2, marginBottom: '1.5rem', overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${((idx + 1) / queue.length) * 100}%`, background: 'var(--accent)', borderRadius: 2 }} />
+        <div style={{ height: '100%', width: `${((idx + 1) / queue.length) * 100}%`, background: mode === 'cram' ? 'var(--warn)' : 'var(--accent)', borderRadius: 2 }} />
       </div>
 
       <div className="card" style={{ padding: '1.5rem', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.25rem' }}>
           <p style={{ fontSize: '0.95rem', color: 'var(--txt)', lineHeight: 1.65, fontWeight: 500 }}>
             {isMulti && <span style={{ color: 'var(--accent-lt)', fontSize: '0.8rem', display: 'block', marginBottom: '0.4rem' }}>Select {q.selectCount}</span>}
+            {q.tags?.includes('previously-asked') && <span style={{ display: 'inline-block', marginBottom: '0.5rem', fontSize: '0.72rem', fontWeight: 600, color: 'var(--warn)', background: 'color-mix(in srgb, var(--warn) 15%, transparent)', borderRadius: '0.25rem', padding: '0.15rem 0.45rem', verticalAlign: 'middle' }}>⭐ Real Exam Question</span>}{q.tags?.includes('previously-asked') && ' '}
             {q.text}
           </p>
           <button onClick={() => isBookmarked ? removeBookmark(q.id) : addBookmark({ questionId: q.id, certId: q.certId, note: '', addedAt: Date.now() })}
@@ -242,7 +297,7 @@ export function Practice() {
             <button className="btn-ghost" onClick={handleAnswer} style={{ fontSize: '0.82rem' }}>Check</button>
           )}
           {answered && (
-            <button className="btn-primary" onClick={next} style={{ fontSize: '0.82rem' }}>
+            <button className="btn-primary" onClick={next} style={{ fontSize: '0.82rem', background: mode === 'cram' ? 'var(--warn)' : undefined }}>
               {idx < queue.length - 1 ? 'Next' : 'Done'} <ChevronRight size={13} />
             </button>
           )}

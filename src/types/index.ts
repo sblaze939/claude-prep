@@ -79,9 +79,16 @@ export interface StudyPlan {
   days: StudyDay[];
 }
 
+export interface StudyTask {
+  text: string;
+  completed: boolean;
+  resourceUrl?: string;
+  resourceTitle?: string;
+}
+
 export interface StudyDay {
   date: string;
-  tasks: string[];
+  tasks: StudyTask[];
   domain: string;
   completed: boolean;
 }
@@ -100,6 +107,7 @@ export interface AppState {
   studyPlan: StudyPlan | null;
   streak: number;
   lastStudyDate: string | null;
+  studyHistory: string[];
   confidence: Record<CertId, number>; // 0-100 per cert
   toggleTheme: () => void;
   addAttempt: (attempt: ExamAttempt) => void;
@@ -109,6 +117,7 @@ export interface AppState {
   updateSRCard: (card: SpacedRepCard) => void;
   setStudyPlan: (plan: StudyPlan | null) => void;
   markDayComplete: (date: string) => void;
+  toggleTask: (date: string, taskIndex: number) => void;
   clearHistory: () => void;
   clearCertHistory: (certId: CertId) => void;
   updateStreak: () => void;

@@ -37,6 +37,7 @@ export const useAppStore = create<AppState>()(
       studyPlan: null,
       streak: 0,
       lastStudyDate: null,
+      studyHistory: [],
       confidence: defaultConfidence(),
 
       toggleTheme: () => {
@@ -83,10 +84,24 @@ export const useAppStore = create<AppState>()(
             studyPlan: {
               ...s.studyPlan,
               days: s.studyPlan.days.map(d =>
-                d.date === date ? { ...d, completed: true } : d,
+                d.date === date ? { ...d, completed: true, tasks: d.tasks.map(t => ({ ...t, completed: true })) } : d,
               ),
             },
           };
+        }),
+
+      toggleTask: (date: string, taskIndex: number) =>
+        set(s => {
+          if (!s.studyPlan) return s;
+          const days = s.studyPlan.days.map(d => {
+            if (d.date !== date) return d;
+            const tasks = d.tasks.map((t, i) =>
+              i === taskIndex ? { ...t, completed: !t.completed } : t,
+            );
+            const allDone = tasks.every(t => t.completed);
+            return { ...d, tasks, completed: allDone };
+          });
+          return { studyPlan: { ...s.studyPlan, days } };
         }),
 
       // Clear all history + reset all confidence
@@ -97,6 +112,7 @@ export const useAppStore = create<AppState>()(
           srCards: [],
           streak: 0,
           lastStudyDate: null,
+          studyHistory: [],
           studyPlan: null,
         }),
 
@@ -113,12 +129,13 @@ export const useAppStore = create<AppState>()(
         }),
 
       updateStreak: () => {
-        const { lastStudyDate, streak } = get();
+        const { lastStudyDate, streak, studyHistory } = get();
         const t = today();
         if (lastStudyDate === t) return;
         const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
         const newStreak = lastStudyDate === yesterday ? streak + 1 : 1;
-        set({ streak: newStreak, lastStudyDate: t });
+        const newHistory = studyHistory.includes(t) ? studyHistory : [...studyHistory, t];
+        set({ streak: newStreak, lastStudyDate: t, studyHistory: newHistory });
       },
     }),
     {
@@ -126,9 +143,21 @@ export const useAppStore = create<AppState>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           document.documentElement.setAttribute('data-theme', state.theme);
-          // Backfill confidence key if missing (old persisted state)
           if (!state.confidence) {
             state.confidence = defaultConfidence();
+          }
+          if (!state.studyHistory) {
+            state.studyHistory = [];
+          }
+          if (state.studyPlan) {
+            state.studyPlan.days = state.studyPlan.days.map((d: any) => ({
+              ...d,
+              tasks: d.tasks.map((t: any) =>
+                typeof t === 'string'
+                  ? { text: t, completed: !!d.completed, resourceUrl: undefined, resourceTitle: undefined }
+                  : t,
+              ),
+            }));
           }
         }
       },

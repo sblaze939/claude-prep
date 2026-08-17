@@ -117,12 +117,14 @@ export function MockExams() {
                 <span style={{ color: 'var(--muted)', fontWeight: 400, fontSize: '0.82rem' }}>({c.shortName})</span>
               </div>
               <div style={{ color: 'var(--muted)', fontSize: '0.78rem', marginTop: '0.2rem' }}>{c.questions} questions · {c.duration} min · ${c.price}</div>
+              {(() => { const prev = getQuestions(c.id as CertId).filter(q => q.tags?.includes('previously-asked')).length; return prev > 0 ? <span style={{ display: 'inline-block', marginTop: '0.3rem', fontSize: '0.72rem', fontWeight: 600, color: 'var(--warn)', background: 'color-mix(in srgb, var(--warn) 15%, transparent)', borderRadius: '0.25rem', padding: '0.1rem 0.4rem' }}>⭐ {prev} previously-asked</span> : null; })()}
             </button>
           ))}
         </div>
         <div className="card" style={{ padding: '1rem 1.25rem', marginBottom: '1rem' }}>
           <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
             <Info label="Questions" value={getQuestions(certId).length + ' in bank'} />
+            <Info label="Previously asked" value={getQuestions(certId).filter(q => q.tags?.includes('previously-asked')).length + ' ⭐'} />
             <Info label="Duration" value={cert.duration + ' min'} />
             <Info label="Pass score" value={cert.passingScore + '/1000'} />
           </div>

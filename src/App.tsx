@@ -10,6 +10,7 @@ import { Resources } from './pages/Resources';
 import { StudyPlan } from './pages/StudyPlan';
 import { DiagnosticTest } from './pages/DiagnosticTest';
 import { Glossary } from './pages/Glossary';
+import { ReviewPage } from './pages/ReviewPage';
 import { ToastContainer } from './components/ui/Toast';
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
             <Route path="/resources" element={<Resources />} />
             <Route path="/glossary" element={<Glossary />} />
             <Route path="/plan" element={<StudyPlan />} />
+            <Route path="/review" element={<ReviewPage />} />
           </Routes>
         </main>
         <Footer />

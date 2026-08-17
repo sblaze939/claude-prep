@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Moon, Sun, Menu, X, FlaskConical, Zap, BookOpen, LayoutDashboard, Library, CalendarDays, Stethoscope, BookMarked } from 'lucide-react';
+import { Moon, Sun, Menu, X, FlaskConical, Zap, BookOpen, LayoutDashboard, Library, CalendarDays, Stethoscope, BookMarked, BookX } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 const links = [
@@ -9,6 +9,7 @@ const links = [
   { to: '/diagnostic', label: 'Diagnostic', icon: Stethoscope },
   { to: '/practice', label: 'Practice', icon: BookOpen },
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/review', label: 'Review', icon: BookX },
   { to: '/resources', label: 'Resources', icon: Library },
   { to: '/glossary', label: 'Glossary', icon: BookMarked },
   { to: '/plan', label: 'Study Plan', icon: CalendarDays },
