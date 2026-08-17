@@ -182,10 +182,14 @@ export function Resources() {
           padding: '0.85rem 1.25rem',
           marginBottom: '1.5rem',
           borderColor: 'var(--accent)',
-          background: 'color-mix(in srgb, var(--accent) 6%, var(--surface))',
+          background: 'var(--surface)',
           display: 'flex',
           flexDirection: 'column',
           gap: '0.75rem',
+          position: 'sticky',
+          top: 0,
+          zIndex: 20,
+          boxShadow: '0 4px 16px color-mix(in srgb, var(--accent) 12%, transparent)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button
