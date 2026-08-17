@@ -129,6 +129,17 @@ export function MockExams() {
             <Info label="Pass score" value={cert.passingScore + '/1000'} />
           </div>
         </div>
+        {/* Bank size warning */}
+        {(() => {
+          const bankSize = getQuestions(certId).length;
+          const target = condensed ? Math.ceil(cert.questions / 2) : cert.questions;
+          if (bankSize >= target) return null;
+          return (
+            <div style={{ background: 'color-mix(in srgb, var(--warn) 12%, var(--surface))', border: '1px solid color-mix(in srgb, var(--warn) 40%, transparent)', borderRadius: '0.5rem', padding: '0.65rem 1rem', marginBottom: '1rem', fontSize: '0.82rem', color: 'var(--warn)' }}>
+              ⚠️ This exam needs <strong>{target} questions</strong> but the bank has <strong>{bankSize}</strong>. Your session will use all {bankSize} available questions.
+            </div>
+          );
+        })()}
         {/* Mode toggle */}
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
           {[{ val: false, label: 'Full exam', sub: `${cert.questions}q · ${cert.duration} min` }, { val: true, label: 'Condensed', sub: `${Math.ceil(cert.questions / 2)}q · ${cert.duration / 2} min` }].map(m => (
