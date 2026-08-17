@@ -84,6 +84,8 @@ export interface StudyTask {
   completed: boolean;
   resourceUrl?: string;
   resourceTitle?: string;
+  readingFocus?: string;
+  practiceConfig?: { domain: string; count: number };
 }
 
 export interface StudyDay {

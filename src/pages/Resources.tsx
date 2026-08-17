@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ExternalLink, Filter, ArrowLeft, BookOpen, CheckCircle, XCircle } from 'lucide-react';
 import { resourceSections } from '../data/resources';
@@ -122,6 +122,7 @@ interface PlanState {
   taskIdx: number;
   resourceUrl?: string;
   resourceTitle?: string;
+  readingFocus?: string;
 }
 
 export function Resources() {
@@ -136,6 +137,16 @@ export function Resources() {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const [certFilter, setCertFilter] = useState<string>('all');
+
+  const highlightedRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (fromPlan && matchingUrl) {
+      setTimeout(() => {
+        highlightedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const filtered = resourceSections.map(section => ({
     ...section,
@@ -191,6 +202,22 @@ export function Resources() {
               </span>
             </div>
           </div>
+
+          {/* Reading focus hint */}
+          {planState?.readingFocus && (
+            <div style={{
+              fontSize: '0.78rem',
+              color: 'var(--txt)',
+              background: 'color-mix(in srgb, var(--accent) 8%, var(--surface2))',
+              borderLeft: '3px solid var(--accent)',
+              borderRadius: '0 0.375rem 0.375rem 0',
+              padding: '0.5rem 0.75rem',
+              lineHeight: 1.5,
+            }}>
+              <span style={{ fontWeight: 700, color: 'var(--accent-lt)' }}>📍 What to focus on: </span>
+              {planState.readingFocus}
+            </div>
+          )}
 
           {/* No-match fallback: standalone open link + Done Reading */}
           {!quizActive && !foundMatch && matchingUrl && (
@@ -320,7 +347,7 @@ export function Resources() {
               {section.items.map(item => {
                 const isHighlighted = fromPlan && item.url === matchingUrl;
                 return (
-                  <div key={item.url + item.title} style={{ position: 'relative' }}>
+                  <div key={item.url + item.title} ref={isHighlighted ? highlightedRef : undefined} style={{ position: 'relative' }}>
                     <a
                       href={item.url}
                       target="_blank"

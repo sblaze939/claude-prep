@@ -20,7 +20,7 @@ function buildCramQuestions(certId: CertId): Question[] {
 
 export function Practice() {
   const location = useLocation();
-  const cramState = location.state as { cramMode?: boolean; certId?: string } | null;
+  const cramState = location.state as { cramMode?: boolean; certId?: string; domainDrill?: boolean; domain?: string; count?: number } | null;
 
   const [mode, setMode] = useState<Mode>('menu');
   const [certId, setCertId] = useState<CertId>('ccdvf');
@@ -48,6 +48,20 @@ export function Practice() {
   useEffect(() => {
     if (cramState?.cramMode && cramState.certId) {
       startCramMode(cramState.certId as CertId);
+    } else if (cramState?.domainDrill && cramState.certId && cramState.domain) {
+      const cid = cramState.certId as CertId;
+      const did = cramState.domain;
+      const count = cramState.count ?? 10;
+      const qs = getQuestions(cid).filter(q => q.domain === did).sort(() => Math.random() - 0.5).slice(0, count);
+      if (qs.length) {
+        setCertId(cid);
+        setDomainId(did);
+        setQueue(qs);
+        setIdx(0);
+        setSel([]);
+        setAnswered(false);
+        setMode('domain');
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
