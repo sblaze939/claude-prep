@@ -181,9 +181,9 @@ export function Home() {
             <p style={{ color: 'var(--muted)', fontSize: '0.82rem', lineHeight: 1.7 }}>
               A teammate,{' '}
               <a href="https://claude-certification-prep.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--muted)', textDecoration: 'underline' }}>Saif</a>
-              , built a clean, simple Claude prep site that showed the community clearly needed a dedicated resource.
-              But it lacked spaced repetition, an exam simulator, progress tracking, domain-level analytics, and a study planner.
-              That gap is exactly what this hub was built to fill.
+              , built a clean Claude prep site that sparked something — it proved the community genuinely wanted a dedicated resource for this.
+              That energy was contagious. This hub is my way of taking that idea further, adding spaced repetition, a full exam simulator,
+              progress analytics, and a study planner on top of the foundation he laid.
             </p>
           </div>
         </div>
