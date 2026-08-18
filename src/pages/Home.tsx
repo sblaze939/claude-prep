@@ -163,6 +163,36 @@ export function Home() {
         </div>
       </section>
 
+      {/* Inspiration credit */}
+      <section style={{ marginBottom: '3rem' }}>
+        <h2 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '1.25rem' }}>
+          Standing on Shoulders
+        </h2>
+        <div className="card" style={{ padding: '1.5rem', display: 'flex', gap: '1.25rem', alignItems: 'flex-start', flexWrap: 'wrap', borderColor: 'color-mix(in srgb, var(--success) 30%, var(--border))' }}>
+          <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'color-mix(in srgb, var(--success) 20%, var(--surface2))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1.5px solid color-mix(in srgb, var(--success) 40%, transparent)' }}>
+            <span style={{ color: 'var(--success)', fontWeight: 800, fontSize: '1rem' }}>SM</span>
+          </div>
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '0.15rem' }}>
+              <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--txt)' }}>Saif Mujawar</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--success)', background: 'color-mix(in srgb, var(--success) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--success) 25%, transparent)', padding: '0.15rem 0.45rem', borderRadius: '0.25rem', fontWeight: 600 }}>Original Creator</span>
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--muted)', marginBottom: '0.5rem' }}>The spark behind this hub</div>
+            <p style={{ color: 'var(--muted)', fontSize: '0.83rem', lineHeight: 1.7, marginBottom: '0.85rem' }}>
+              Saif built the original Claude certification prep site — a clean, simple tool that made it clear the community needed a dedicated resource. Seeing the gap it filled sparked the idea to build something more feature-rich on top of that foundation.
+            </p>
+            <a
+              href="https://claude-certification-prep.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--success)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', borderBottom: '1px solid color-mix(in srgb, var(--success) 40%, transparent)', paddingBottom: '1px' }}
+            >
+              Visit Saif's original site →
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Disclaimer */}
       <p style={{ color: 'var(--muted)', fontSize: '0.75rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
         <CheckCircle size={12} />

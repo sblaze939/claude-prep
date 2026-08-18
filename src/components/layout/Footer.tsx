@@ -13,6 +13,13 @@ export function Footer() {
         <p style={{ color: 'var(--muted)', fontSize: '0.73rem', opacity: 0.7 }}>
           Content based on public exam guides (v1.0, July 2026). Always verify the official guide before booking.
         </p>
+        <p style={{ color: 'var(--muted)', fontSize: '0.73rem', opacity: 0.7 }}>
+          Inspired by{' '}
+          <a href="https://claude-certification-prep.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--muted)', textDecoration: 'underline' }}>
+            Saif Mujawar's original prep site
+          </a>{' '}
+          — the idea that started it all.
+        </p>
       </div>
     </footer>
   );
