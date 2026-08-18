@@ -186,7 +186,7 @@ export function Home() {
               href="https://claude-certification-prep.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--success)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', borderBottom: '1.5px solid var(--success)', paddingBottom: '1px' }}
+              style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--accent-lt)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', borderBottom: '1.5px solid var(--accent-lt)', paddingBottom: '1px' }}
             >
               Visit Saif's original site →
             </a>
