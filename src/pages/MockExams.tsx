@@ -16,6 +16,10 @@ function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
+function shuffleOptions(q: Question): Question {
+  return { ...q, options: [...q.options].sort(() => Math.random() - 0.5) };
+}
+
 export function MockExams() {
   const [params] = useSearchParams();
   const [phase, setPhase] = useState<Phase>('select');
@@ -36,7 +40,7 @@ export function MockExams() {
 
   const startExam = () => {
     const qCount = condensed ? Math.ceil(cert.questions / 2) : cert.questions;
-    const qs = shuffle(getQuestions(certId)).slice(0, qCount);
+    const qs = shuffle(getQuestions(certId)).slice(0, qCount).map(shuffleOptions);
     setQuestions(qs);
     setAnswers({});
     setCurrent(0);
@@ -307,7 +311,7 @@ export function MockExams() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '1.25rem' }}>
-          {q.options.map(opt => {
+          {q.options.map((opt, oi) => {
             const chosen = sel.includes(opt.id);
             const isCorrect = q.correctIds.includes(opt.id);
             let borderColor = chosen ? 'var(--accent)' : 'var(--border)';
@@ -333,7 +337,7 @@ export function MockExams() {
                   transition: 'all 0.15s',
                 }}
               >
-                <span style={{ fontWeight: 600, color: 'var(--muted)', marginRight: '0.5rem' }}>{opt.id.toUpperCase()}.</span>
+                <span style={{ fontWeight: 600, color: 'var(--muted)', marginRight: '0.5rem' }}>{String.fromCharCode(65 + oi)}.</span>
                 {opt.text}
               </button>
             );
@@ -348,8 +352,8 @@ export function MockExams() {
         )}
       </div>
 
-      {/* Nav */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* Nav — sticky so buttons don't jump with content height */}
+      <div style={{ position: 'sticky', bottom: 0, background: 'var(--bg)', borderTop: '1px solid var(--border)', padding: '0.85rem 0', marginTop: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button
           className="btn-ghost"
           onClick={() => setCurrent(c => Math.max(0, c - 1))}
