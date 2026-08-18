@@ -174,17 +174,22 @@ export function Home() {
             <span style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '0.85rem' }}>SM</span>
           </div>
           <div style={{ flex: 1, minWidth: 220 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <div style={{ marginBottom: '0.5rem' }}>
               <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--txt)' }}>Saif Mujawar</span>
-              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', background: 'var(--surface2)', padding: '0.1rem 0.4rem', borderRadius: '0.25rem' }}>Inspired this</span>
             </div>
-            <p style={{ color: 'var(--muted)', fontSize: '0.82rem', lineHeight: 1.7 }}>
-              A teammate,{' '}
-              <a href="https://claude-certification-prep.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--muted)', textDecoration: 'underline' }}>Saif</a>
-              , built a clean Claude prep site that sparked something — it proved the community genuinely wanted a dedicated resource for this.
+            <p style={{ color: 'var(--muted)', fontSize: '0.82rem', lineHeight: 1.7, marginBottom: '0.85rem' }}>
+              A teammate, Saif, built a clean Claude prep site that sparked something — it proved the community genuinely wanted a dedicated resource for this.
               That energy was contagious. This hub is my way of taking that idea further, adding spaced repetition, a full exam simulator,
               progress analytics, and a study planner on top of the foundation he laid.
             </p>
+            <a
+              href="https://claude-certification-prep.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--success)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', borderBottom: '1.5px solid var(--success)', paddingBottom: '1px' }}
+            >
+              Visit Saif's original site →
+            </a>
           </div>
         </div>
       </section>
