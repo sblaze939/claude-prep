@@ -164,6 +164,31 @@ export function Home() {
         </div>
       </section>
 
+      {/* Origin story */}
+      <section style={{ marginBottom: '3rem' }}>
+        <h2 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '1.25rem' }}>
+          Why this hub exists
+        </h2>
+        <div className="card" style={{ padding: '1.5rem', display: 'flex', gap: '1.25rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--surface2)', border: '1.5px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '0.85rem' }}>SM</span>
+          </div>
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--txt)' }}>Saif Mujawar</span>
+              <span style={{ fontSize: '0.7rem', color: 'var(--muted)', background: 'var(--surface2)', padding: '0.1rem 0.4rem', borderRadius: '0.25rem' }}>Inspired this</span>
+            </div>
+            <p style={{ color: 'var(--muted)', fontSize: '0.82rem', lineHeight: 1.7 }}>
+              A teammate,{' '}
+              <a href="https://claude-certification-prep.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--muted)', textDecoration: 'underline' }}>Saif</a>
+              , built a clean, simple Claude prep site that showed the community clearly needed a dedicated resource.
+              But it lacked spaced repetition, an exam simulator, progress tracking, domain-level analytics, and a study planner.
+              That gap is exactly what this hub was built to fill.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Disclaimer */}
       <p style={{ color: 'var(--muted)', fontSize: '0.75rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
         <CheckCircle size={12} />
