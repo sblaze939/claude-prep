@@ -374,7 +374,7 @@ export function Simulator() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ position: 'sticky', bottom: 0, background: 'var(--bg)', borderTop: '1px solid var(--border)', padding: '0.85rem 0', display: 'flex', justifyContent: 'space-between' }}>
         <button className="btn-ghost" onClick={() => setCurrent(c => Math.max(0, c - 1))} disabled={current === 0}>
           <ChevronLeft size={15} /> Prev
         </button>
